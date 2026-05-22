@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stance Analysis System - Perbandingan Evaluasi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#131b2e",
+                        "primary": "#000000",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "tertiary-container": "#001e2f",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-tertiary-fixed": "#001e2f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "secondary": "#0058be",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#fefcff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#2170e4",
+                        "background": "#f8f9ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-high": "#dce9ff",
+                        "outline": "#76777d",
+                        "surface": "#f8f9ff",
+                        "tertiary": "#000000",
+                        "on-primary-fixed": "#131b2e",
+                        "on-surface-variant": "#45464d",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-background": "#0b1c30",
+                        "surface-tint": "#565e74",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-container": "#008cc7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-padding": "32px",
+                        "gutter": "24px",
+                        "card-gap": "20px",
+                        "unit": "4px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .confusion-matrix-cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface text-primary font-headline-md text-headline-md docked full-width top-0 border-b border-outline-variant flex justify-between items-center w-full px-container-padding h-16 z-50 fixed">
+<div class="font-headline-lg text-headline-lg font-bold text-primary">Stance Analysis System</div>
+<div class="flex gap-stack-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors scale-100 active:scale-95 transition-transform" data-icon="account_balance">account_balance</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors scale-100 active:scale-95 transition-transform" data-icon="info">info</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-secondary transition-colors scale-100 active:scale-95 transition-transform" data-icon="settings">settings</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-stack-md hidden md:flex z-40 pt-20">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Stance Detection</h2>
+<p class="text-on-surface-variant text-label-md font-label-md">IndoBERT &amp; SMOTE</p>
+</div>
+<nav class="flex flex-col gap-unit">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-md text-label-md">Beranda</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-md text-label-md">Eksplorasi Data &amp; Pra-proses</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-secondary-container bg-surface-container-high border-r-4 border-secondary font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+<span class="font-label-md text-label-md">Perbandingan Evaluasi Model</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="batch_prediction">batch_prediction</span>
+<span class="font-label-md text-label-md">Demo Prediksi Interaktif</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-20 pb-12 px-container-padding min-h-screen">
+<!-- Header Section -->
+<section class="mb-stack-md">
+<h1 class="font-headline-xl text-headline-xl mb-2">Perbandingan Evaluasi Model</h1>
+<p class="text-on-surface-variant max-w-3xl">Analisis komparatif antara performa Model Dasar (IndoBERT) dengan Model yang Dioptimasi menggunakan teknik penyeimbangan data Synthetic Minority Over-sampling Technique (SMOTE).</p>
+</section>
+<!-- Model Info Note -->
+<div class="bg-surface-container-low border-l-4 border-secondary p-4 mb-stack-md flex gap-4 items-start">
+<span class="material-symbols-outlined text-secondary" data-icon="lightbulb">lightbulb</span>
+<div>
+<p class="text-on-secondary-fixed-variant font-label-md text-label-md uppercase tracking-wider mb-1">Catatan Metodologi</p>
+<p class="text-on-surface-variant font-body-md">Kedua model menggunakan arsitektur MLPClassifier sebagai head classifier di atas embedding IndoBERT. Evaluasi difokuskan pada F1-Macro untuk menangani ketidakseimbangan kelas pada dataset target.</p>
+</div>
+</div>
+<!-- Comparison Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter mb-stack-md">
+<!-- Model 1: Tanpa SMOTE -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 flex flex-col gap-stack-md">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-sm font-label-sm bg-outline-variant text-on-surface px-2 py-1 rounded mb-2 inline-block">MODEL 1</span>
+<h3 class="font-headline-md text-headline-md">IndoBERT (Tanpa SMOTE)</h3>
+</div>
+<div class="text-right">
+<p class="text-label-sm font-label-sm text-on-surface-variant">F1-Macro</p>
+<p class="font-headline-lg text-headline-lg text-primary">0.8540</p>
+</div>
+</div>
+<div class="chart-container flex flex-col">
+<p class="text-label-md font-label-md text-on-surface-variant mb-2">Confusion Matrix (Normalised)</p>
+<div class="grid grid-cols-3 gap-1 flex-1">
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-80" title="Pro: 0.88">0.88</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-10" title="Neutral: 0.05">0.05</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-20" title="Contra: 0.07">0.07</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-30" title="Pro: 0.12">0.12</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-70" title="Neutral: 0.74">0.74</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-40" title="Contra: 0.14">0.14</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-20" title="Pro: 0.09">0.09</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-40" title="Neutral: 0.15">0.15</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-75" title="Contra: 0.76">0.76</div>
+</div>
+<div class="flex justify-between mt-2 text-label-sm font-label-sm text-on-surface-variant">
+<span>Predicted: Pro / Neu / Con</span>
+<span>Actual: Pro / Neu / Con</span>
+</div>
+</div>
+</div>
+<!-- Model 2: Dengan SMOTE -->
+<div class="bg-surface-container-lowest border border-outline-variant p-6 flex flex-col gap-stack-md shadow-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-label-sm font-label-sm bg-secondary text-on-secondary px-2 py-1 rounded mb-2 inline-block">MODEL 2 (OPTIMISED)</span>
+<h3 class="font-headline-md text-headline-md">IndoBERT + SMOTE</h3>
+</div>
+<div class="text-right">
+<p class="text-label-sm font-label-sm text-on-surface-variant">F1-Macro</p>
+<p class="font-headline-lg text-headline-lg text-secondary">0.9125</p>
+</div>
+</div>
+<div class="chart-container flex flex-col">
+<p class="text-label-md font-label-md text-on-surface-variant mb-2">Confusion Matrix (Normalised)</p>
+<div class="grid grid-cols-3 gap-1 flex-1">
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-95" title="Pro: 0.94">0.94</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-5" title="Neutral: 0.03">0.03</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-5" title="Contra: 0.03">0.03</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-10" title="Pro: 0.04">0.04</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-90" title="Neutral: 0.89">0.89</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-15" title="Contra: 0.07">0.07</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-5" title="Pro: 0.02">0.02</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-15" title="Neutral: 0.06">0.06</div>
+<div class="confusion-matrix-cell bg-secondary text-on-secondary opacity-95" title="Contra: 0.92">0.92</div>
+</div>
+<div class="flex justify-between mt-2 text-label-sm font-label-sm text-on-surface-variant">
+<span>Predicted: Pro / Neu / Con</span>
+<span>Actual: Pro / Neu / Con</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Training Loss Curve Section -->
+<section class="bg-surface-container-lowest border border-outline-variant p-6">
+<h3 class="font-headline-md text-headline-md mb-6">Kurva Training Loss vs Epoch (MLPClassifier)</h3>
+<div class="relative h-64 w-full">
+<!-- Simple SVG Chart Representation -->
+<svg class="w-full h-full" viewbox="0 0 1000 300">
+<!-- Grid Lines -->
+<line stroke="#E2E8F0" stroke-width="1" x1="50" x2="50" y1="20" y2="280"></line>
+<line stroke="#E2E8F0" stroke-width="1" x1="50" x2="980" y1="280" y2="280"></line>
+<line stroke="#F1F5F9" stroke-dasharray="4" stroke-width="1" x1="50" x2="980" y1="20" y2="20"></line>
+<line stroke="#F1F5F9" stroke-dasharray="4" stroke-width="1" x1="50" x2="980" y1="150" y2="150"></line>
+<!-- Loss Curve Path -->
+<path d="M 50 50 Q 150 180, 250 150 T 450 100 T 650 80 T 850 65 T 980 60" fill="none" stroke="#0058be" stroke-width="3"></path>
+<!-- Training Points -->
+<circle cx="50" cy="50" fill="#0058be" r="4"></circle>
+<circle cx="250" cy="150" fill="#0058be" r="4"></circle>
+<circle cx="450" cy="100" fill="#0058be" r="4"></circle>
+<circle cx="650" cy="80" fill="#0058be" r="4"></circle>
+<circle cx="850" cy="65" fill="#0058be" r="4"></circle>
+<!-- Labels -->
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="end" x="30" y="55">0.8</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="end" x="30" y="155">0.4</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="end" x="30" y="285">0.0</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="middle" x="50" y="295">Ep 0</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="middle" x="250" y="295">Ep 25</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="middle" x="450" y="295">Ep 50</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="middle" x="650" y="295">Ep 75</text>
+<text fill="#475569" font-family="Inter" font-size="12" text-anchor="middle" x="850" y="295">Ep 100</text>
+</svg>
+</div>
+<div class="mt-4 flex gap-stack-md justify-center">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-secondary rounded-full"></div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Training Loss</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant w-full mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding py-stack-md max-w-7xl mx-auto w-full">
+<div class="font-label-md font-bold text-on-surface">© 2024 Tim Kelompok dibimbing oleh Pak Heru</div>
+<div class="flex gap-gutter mt-4 md:mt-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Metodologi</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Repositori Kode</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Dokumentasi IndoBERT</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for the confusion matrix cells
+        document.querySelectorAll('.confusion-matrix-cell').forEach(cell => {
+            cell.addEventListener('mouseenter', () => {
+                cell.classList.add('scale-105', 'z-10', 'shadow-lg');
+                cell.classList.replace('opacity-80', 'opacity-100');
+                cell.classList.replace('opacity-70', 'opacity-100');
+                cell.classList.replace('opacity-75', 'opacity-100');
+                cell.classList.replace('opacity-95', 'opacity-100');
+                cell.classList.replace('opacity-90', 'opacity-100');
+            });
+            cell.addEventListener('mouseleave', () => {
+                cell.classList.remove('scale-105', 'z-10', 'shadow-lg');
+                // Simple reset (ideal logic would track original opacity)
+                location.reload; // Placeholder for reset
+            });
+        });
+    </script>
+</body></html>

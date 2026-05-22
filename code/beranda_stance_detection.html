@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<title>Stance Analysis System - Hogi Minaya</title>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#131b2e",
+                        "primary": "#000000",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "tertiary-container": "#001e2f",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-tertiary-fixed": "#001e2f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "secondary": "#0058be",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#fefcff",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#2170e4",
+                        "background": "#f8f9ff",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed": "#c9e6ff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-high": "#dce9ff",
+                        "outline": "#76777d",
+                        "surface": "#f8f9ff",
+                        "tertiary": "#000000",
+                        "on-primary-fixed": "#131b2e",
+                        "on-surface-variant": "#45464d",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-background": "#0b1c30",
+                        "surface-tint": "#565e74",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-container": "#008cc7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-padding": "32px",
+                        "gutter": "24px",
+                        "card-gap": "20px",
+                        "unit": "4px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<nav class="fixed left-0 top-0 h-screen w-64 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-stack-md z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Stance Detection</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">IndoBERT &amp; SMOTE</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 text-secondary-container bg-surface-container-high border-r-4 border-secondary font-bold transition-all duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Beranda</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-label-md text-label-md">Eksplorasi Data &amp; Pra-proses</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span class="font-label-md text-label-md">Perbandingan Evaluasi Model</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined">batch_prediction</span>
+<span class="font-label-md text-label-md">Demo Prediksi Interaktif</span>
+</a>
+</div>
+<div class="mt-auto px-6 py-4 flex items-center gap-3 border-t border-outline-variant">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">school</span>
+</div>
+<span class="font-label-sm text-label-sm font-medium">Thesis Logo</span>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-container-padding h-16 z-40 bg-surface border-b border-outline-variant sticky top-0">
+<div class="font-headline-lg text-headline-lg font-bold text-primary">Stance Analysis System</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary cursor-pointer transition-colors">account_balance</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary cursor-pointer transition-colors">info</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-secondary cursor-pointer transition-colors">settings</span>
+</div>
+</div>
+</header>
+<!-- Canvas / Content -->
+<div class="px-container-padding py-stack-md max-w-7xl mx-auto w-full flex-1">
+<!-- Hero Section / Title -->
+<div class="mb-10">
+<h1 class="font-headline-xl text-headline-xl text-primary mb-4">Analisis Stance Detection Komentar TikTok Studi Kasus Hogi Minaya</h1>
+<div class="h-1 w-24 bg-secondary rounded-full"></div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="bento-grid">
+<!-- Main Context Card -->
+<section class="col-span-12 lg:col-span-8 bg-white border border-outline-variant p-6 rounded-lg transition-all hover:shadow-[0px_4px_12px_rgba(15,23,42,0.05)]">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary">history_edu</span>
+<h2 class="font-headline-md text-headline-md text-primary">Latar Belakang Kasus</h2>
+</div>
+<div class="space-y-4 text-on-surface-variant font-body-lg text-body-lg leading-relaxed">
+<p>
+                            Fenomena Hogi Minaya di platform TikTok menjadi subjek penelitian yang krusial dalam memahami dinamika opini publik di media sosial Indonesia. Melalui algoritma stance detection, penelitian ini mengeksplorasi posisi audiens—baik yang mendukung, menolak, maupun netral—terhadap narasi yang berkembang.
+                        </p>
+<p>
+                            Tingginya volume interaksi dan variasi bahasa yang digunakan dalam komentar memerlukan pendekatan komputasi yang presisi. Penggunaan arsitektur IndoBERT yang dikombinasikan dengan teknik SMOTE bertujuan untuk menangani ketidakseimbangan data (imbalance dataset) guna menghasilkan evaluasi model yang lebih akurat dan kredibel dalam konteks analisis sentimen dan opini digital.
+                        </p>
+</div>
+</section>
+<!-- Visual Abstract Card -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-low rounded-lg overflow-hidden border border-outline-variant">
+<img alt="Visual Research" class="w-full h-48 object-cover opacity-80" data-alt="A sophisticated data visualization interface showing complex network graphs and neural network layers. The design follows a minimalist academic aesthetic with a palette of deep slate and professional blues. High-density information is presented clearly against a clean light-mode background, symbolizing the precision of IndoBERT and SMOTE methodology in a research context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgLvPbB8JPqMDQTsgeMuar95digj3LFUSl5o8ofOiGYlt3kLUmGnkMKivrBZsRLxp3jgSqiBSrPFz7OYWKGvXfs55c6fjo0OxavYiSyF5KCPQP79i_mqeQOzSGpc43HsSV43KAN9kIGF8DJN5Vo_zQN5RtLOJ56yE83_ZWumxlO-9UHXz8Psmtyrm21-On8ODtZSV-Pkr14skrwM2Nm6QmiSv6gwqd7GSBgobHhdcdtb4A4o-GyFaz0L67-qaS__OyHNJOBJuruL0"/>
+<div class="p-6">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Metodologi Inti</h3>
+<div class="flex flex-wrap gap-2 mt-4">
+<span class="px-3 py-1 bg-white border border-outline-variant rounded-full font-label-sm text-label-sm text-secondary">IndoBERT</span>
+<span class="px-3 py-1 bg-white border border-outline-variant rounded-full font-label-sm text-label-sm text-secondary">SMOTE</span>
+<span class="px-3 py-1 bg-white border border-outline-variant rounded-full font-label-sm text-label-sm text-secondary">NLP</span>
+</div>
+</div>
+</div>
+<!-- Info Box (st.info style) -->
+<section class="col-span-12 bg-[#E0F2FE] border-l-4 border-[#0EA5E9] p-6 rounded-r-lg">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-[#0369A1]" style="font-variation-settings: 'FILL' 1;">groups</span>
+<div>
+<h3 class="font-headline-md text-headline-md text-[#0369A1] mb-1">Catatan Penelitian</h3>
+<p class="font-body-md text-body-md text-[#0369A1] opacity-90">
+                                Penelitian ini merupakan kerja tim kelompok kami yang dibimbing oleh Pak Heru. Kontribusi akademik ini ditujukan untuk pengembangan ilmu pengetahuan di bidang Natural Language Processing (NLP) khususnya pada deteksi stance bahasa Indonesia.
+                            </p>
+</div>
+</div>
+</section>
+<!-- Data Preview Cards -->
+<div class="col-span-12 md:col-span-4 bg-white border border-outline-variant p-6 rounded-lg">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant mb-2 block">Dataset Size</span>
+<div class="text-4xl font-bold text-primary">4,820+</div>
+<p class="font-label-md text-label-md text-on-surface-variant mt-2">Komentar TikTok Terverifikasi</p>
+</div>
+<div class="col-span-12 md:col-span-4 bg-white border border-outline-variant p-6 rounded-lg">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant mb-2 block">Target Class</span>
+<div class="text-4xl font-bold text-primary">3 Level</div>
+<p class="font-label-md text-label-md text-on-surface-variant mt-2">Favor, Against, Neutral</p>
+</div>
+<div class="col-span-12 md:col-span-4 bg-white border border-outline-variant p-6 rounded-lg">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant mb-2 block">Processing</span>
+<div class="text-4xl font-bold text-primary">89.4%</div>
+<p class="font-label-md text-label-md text-on-surface-variant mt-2">Akurasi Validasi IndoBERT</p>
+</div>
+</div>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="w-full mt-auto border-t border-outline-variant bg-surface-container-low">
+<div class="flex flex-col md:flex-row justify-between items-center px-container-padding py-stack-md max-w-7xl mx-auto w-full">
+<span class="font-label-md font-bold text-on-surface">© 2024 Tim Kelompok dibimbing oleh Pak Heru</span>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Metodologi</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Repositori Kode</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline underline-offset-4 transition-colors" href="#">Dokumentasi IndoBERT</a>
+</div>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('section, .col-span-12').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>
