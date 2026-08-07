@@ -81,8 +81,8 @@ st.markdown("""
         border-bottom: 2px solid #3b82f6; padding-bottom: .5rem; margin-bottom: 1rem;
     }
     .section-heading {
-        font-size: 1.2rem; font-weight: 600; color: #1e3a5f;
-        border-bottom: 2px solid #e2e8f0; padding-bottom: .5rem;
+        font-size: 1.2rem; font-weight: 600; color: var(--text-color, #1e3a5f);
+        border-bottom: 2px solid rgba(128, 128, 128, 0.2); padding-bottom: .5rem;
         margin: 1.5rem 0 1rem 0;
     }
     footer { visibility: hidden; }
@@ -127,9 +127,9 @@ SLANG_DICT = {
 }
 STOPWORDS_ID = {
     "yang","dan","di","ke","dari","ini","itu","ada","juga","dengan","untuk","pada",
-    "oleh","adalah","dalam","tidak","se","akan","sudah","atau","jadi","karena",
+    "oleh","adalah","dalam","se","akan","sudah","atau","jadi","karena",
     "lebih","bisa","kita","kami","mereka","dia","saya","kamu","anda","ia","nya",
-    "pun","lah","lagi","pula","kan","tapi","namun","kalau","maka","jika","bila",
+    "pun","lah","lagi","pula","kan","kalau","maka","jika","bila",
     "ketika","saat","hingga","sampai","seperti","bahwa","agar","supaya","meski","walaupun",
 }
 
@@ -148,35 +148,48 @@ def preprocess_text(text: str) -> str:
 # KATA KUNCI FALLBACK
 # ─────────────────────────────────────────────
 KEYWORDS_CLASS0 = [
-    "pecat","kapolres","polisi lindungi","no viral no justice","no justice","no viral",
-    "viral justice","bebaskan hogi","hogi bebas","bela hogi","dukung hogi","hogi pahlawan",
-    "bela diri","pembelaan diri","korban jadi tersangka","tersangka korban","aparat zalim",
-    "aparat tidak adil","hukum tidak adil","keadilan hogi","hukum berpihak",
-    "polisi bela jambret","polisi lindungi penjahat","pak hogi","safaruddin benar",
-    "harusnya dipecat","hancur hukum","hukum hancur","ketidakadilan","tidak adil",
-    "malah ditangkap","jangan tangkap hogi","berani bela istri","bela keluarga",
-    "salah sistem","sistem rusak","kritik polisi","aparat gagal","polisi gagal","hukum bobrok",
-]
-KEYWORDS_CLASS1 = [
-    "hogi salah","hukum harus tegak","proses hukum","ikut hukum","taat hukum",
-    "tegakan hukum","hogi bersalah","tidak bisa main hakim","main hakim sendiri",
-    "hukum berlaku","aparat benar","polisi benar","sepakat polisi","hukum harus",
-    "dihukum","perlu diadili","diadili","proses peradilan",
+    # Kritik keras terhadap polisi / kapolres
+    'pecat', 'pecat kapolres', 'pecat polisi', 'kapolres', 'polres sleman',
+    'polisi hama', 'polisi jambret', 'polisi lindungi', 'polisi amplop',
+    'polisi salah', 'polisi korup', 'polisi ngejar jambret', 'sesama jambret',
+
+    # Ketidakadilan / korban vs tersangka
+    'korban jadi tersangka', 'korban=tersangka', 'jambret=korban',
+    'tidak adil', 'hancur hukum', 'main hakim', 'keadilan', 'rakyat miskin',
+    'no viral no justice', 'polisi meras', 'polisi vs rakyat',
+
+    # Dukungan langsung ke DPR / Safaruddin
+    'terima kasih pak', 'trima kasih', 'terimakasih bapak', 'safaruddin',
+    'drs safaruddin', 'hebat anggota', 'hebat dpr', 'salut', 'pembela rakyat',
+    'baru kali ini dpr', 'baru kali ini gue liat dpr', 'baru kali ini saya nyimak',
+    'akhirnya ada dpr', 'anggota dewan ini', 'saya suka anggota dewan',
+    'sehat selalu pak', 'panjang umur', 'mewakili suara rakyat',
+
+    # Emosi & ungkapan umum pendukung
+    'ngga masuk akal polisinya', 'kok bisa jadi kapolres', 'polisi= hama',
+    'hukum mati', 'hukum indo', 'hukumnya lemah', 'polisi lindung jambret',
+    'viralkan', 'ini gunanya di viralkan', 'baru kali ini', 'akhirnya'
 ]
 
+def label_stance(text):
+    text = str(text).lower()
+    for kw in KEYWORDS_CLASS0:
+        if kw in text:
+            return 0
+    return 1  # Kelas 1: Oppose/Neutral
+
 def predict_keyword(text: str) -> dict:
-    tl = text.lower()
-    s0 = sum(1 for k in KEYWORDS_CLASS0 if k in tl)
-    s1 = sum(1 for k in KEYWORDS_CLASS1 if k in tl)
-    total = s0 + s1
-    if total == 0:
-        p0, p1 = 0.15, 0.85
+    tl = str(text).lower()
+    pred = label_stance(tl)
+    matched = [kw for kw in KEYWORDS_CLASS0 if kw in tl]
+    
+    if pred == 0:
+        p0 = 0.85
+        p1 = 0.15
     else:
-        p0 = min(max(s0 / total + np.random.uniform(-0.03, 0.03), 0.05), 0.95)
-        p1 = 1 - p0
-    pred    = 0 if p0 > p1 else 1
-    matched = [k for k in KEYWORDS_CLASS0 if k in tl] + \
-              [k for k in KEYWORDS_CLASS1 if k in tl]
+        p0 = 0.15
+        p1 = 0.85
+        
     return {"class": pred, "prob_0": p0, "prob_1": p1,
             "confidence": max(p0, p1), "matched_keywords": matched,
             "method": "keyword_matching"}
@@ -401,7 +414,7 @@ if page == "🏠 Beranda":
     cl, cr = st.columns([3, 2])
 
     with cl:
-        st.markdown("<div class='section-heading'>Tentang Penelitian</div>", unsafe_allow_html=True)
+        st.subheader("Tentang Penelitian", divider="blue")
         if isinstance(total, int):
             st.markdown(f"""
             Penelitian ini menganalisis **stance** (keberpihakan) komentar TikTok terkait kasus
@@ -420,7 +433,7 @@ if page == "🏠 Beranda":
         else:
             st.warning("Dataset CSV tidak ditemukan. Letakkan file CSV di folder `Dataset/`.")
 
-        st.markdown("<div class='section-heading'>Definisi Kelas</div>", unsafe_allow_html=True)
+        st.subheader("Definisi Kelas", divider="blue")
         k0, k1 = st.columns(2)
         with k0:
             st.markdown("""**🟢 Kelas 0 — Support Hogi**
@@ -430,7 +443,7 @@ Membela Hogi, mengkritik ketidakadilan proses hukum, atau menyindir aparat peneg
 Mendukung proses hukum formal, mengkritik tindakan Hogi, atau komentar netral/spam.""")
 
     with cr:
-        st.markdown("<div class='section-heading'>Pipeline Model</div>", unsafe_allow_html=True)
+        st.subheader("Pipeline Model", divider="blue")
         for icon, step, desc in [
             ("1️⃣", "Scraping TikTok",              f"{total:,} komentar (Apify)" if isinstance(total,int) else "–"),
             ("2️⃣", "Text Preprocessing",           "Cleaning → Normalisasi → Stemming"),
@@ -453,8 +466,7 @@ Mendukung proses hukum formal, mengkritik tindakan Hogi, atau komentar netral/sp
             </div>""", unsafe_allow_html=True)
 
     if stats.get("has_label"):
-        st.markdown("<div class='section-heading'>Distribusi Kelas Dataset (dari CSV)</div>",
-                    unsafe_allow_html=True)
+        st.subheader("Distribusi Kelas Dataset (dari CSV)", divider="blue")
         c0n = stats["class_0_count"]
         c1n = stats["class_1_count"]
         cp1, cp2 = st.columns(2)
@@ -465,12 +477,14 @@ Mendukung proses hukum formal, mengkritik tindakan Hogi, atau komentar netral/sp
                 text=[f"{c0n:,} ({stats['class_0_pct']}%)",
                       f"{c1n:,} ({stats['class_1_pct']}%)"],
                 textposition="outside", width=0.5,
+                textfont=dict(color="#1f2937")
             )])
             fig.update_layout(title="Distribusi Kelas Sebelum SMOTE",
                 yaxis_title="Jumlah Komentar", plot_bgcolor="#f8fafc",
                 paper_bgcolor="#fff", height=300,
-                margin=dict(t=40,b=20,l=40,r=20), showlegend=False)
-            st.plotly_chart(fig, use_container_width=True)
+                margin=dict(t=40,b=20,l=40,r=20), showlegend=False,
+                font=dict(color="#1f2937"))
+            st.plotly_chart(fig, use_container_width=True, theme=None)
         with cp2:
             fig2 = go.Figure(data=[go.Pie(
                 labels=["Kelas 0 (Support Hogi)", "Kelas 1 (Oppose/Neutral)"],
@@ -479,8 +493,9 @@ Mendukung proses hukum formal, mengkritik tindakan Hogi, atau komentar netral/sp
                 textinfo="label+percent", textfont_size=11,
             )])
             fig2.update_layout(title="Proporsi Kelas Dataset", height=300,
-                margin=dict(t=40,b=20,l=20,r=20), paper_bgcolor="#fff")
-            st.plotly_chart(fig2, use_container_width=True)
+                margin=dict(t=40,b=20,l=20,r=20), paper_bgcolor="#fff",
+                font=dict(color="#1f2937"))
+            st.plotly_chart(fig2, use_container_width=True, theme=None)
     else:
         st.markdown("""<div class='warning-box'>
             ⚠️ Kolom label tidak terdeteksi di CSV. Pastikan CSV memiliki kolom
@@ -509,8 +524,7 @@ elif page == "📊 Eksplorasi Data":
     ])
 
     with tab1:
-        st.markdown("<div class='section-heading'>Statistik Otomatis dari CSV</div>",
-                    unsafe_allow_html=True)
+        st.subheader("Statistik Otomatis dari CSV", divider="blue")
         total = stats["total"]
         train = stats.get("train_size", int(total * 0.8))
         test  = stats.get("test_size",  total - train)
@@ -553,16 +567,8 @@ elif page == "📊 Eksplorasi Data":
         st.dataframe(pd.DataFrame(info_rows, columns=["Parameter", "Nilai"]),
                      use_container_width=True, hide_index=True)
 
-        st.markdown("<div class='section-heading'>Missing Values per Kolom</div>",
-                    unsafe_allow_html=True)
-        mv = df_raw.isnull().sum().reset_index()
-        mv.columns = ["Kolom", "Missing"]
-        mv["Persentase"] = (mv["Missing"] / len(df_raw) * 100).round(2).astype(str) + "%"
-        st.dataframe(mv, use_container_width=True, hide_index=True)
-
     with tab2:
-        st.markdown("<div class='section-heading'>Distribusi Sebelum & Sesudah SMOTE</div>",
-                    unsafe_allow_html=True)
+        st.subheader("Distribusi Sebelum & Sesudah SMOTE", divider="blue")
         if not stats.get("has_label"):
             st.info("ℹ️ Dataset ini tidak memiliki kolom label ground-truth. Anda dapat menjalankan "
                     "prediksi stance secara dinamis menggunakan model untuk melihat efek SMOTE.")
@@ -631,17 +637,21 @@ elif page == "📊 Eksplorasi Data":
                 fig_sm.add_trace(go.Bar(
                     x=["Kelas 0", "Kelas 1"], y=[c0_s1, c1_s1],
                     marker_color=["#dc2626","#1e3a5f"],
-                    text=[str(c0_s1), str(c1_s1)], textposition="outside"),
+                    text=[str(c0_s1), str(c1_s1)], textposition="outside",
+                    textfont=dict(color="#1f2937")),
                     row=1, col=1)
                 fig_sm.add_trace(go.Bar(
                     x=["Kelas 0", "Kelas 1"], y=[c0_s2, c1_s2],
                     marker_color=["#16a34a","#3b82f6"],
-                    text=[str(c0_s2), str(c1_s2)], textposition="outside"),
+                    text=[str(c0_s2), str(c1_s2)], textposition="outside",
+                    textfont=dict(color="#1f2937")),
                     row=1, col=2)
                 fig_sm.update_layout(height=380, showlegend=False,
                     plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
-                    margin=dict(t=50,b=20))
-                st.plotly_chart(fig_sm, use_container_width=True)
+                    margin=dict(t=50,b=20),
+                    font=dict(color="#1f2937"))
+                fig_sm.update_annotations(font=dict(color="#1f2937"))
+                st.plotly_chart(fig_sm, use_container_width=True, theme=None)
                 
                 st.markdown("""<div class='info-box'>
                     💡 <b>Efek SMOTE pada Prediksi:</b> Model Skenario 1 (Tanpa SMOTE) cenderung bias ke Kelas 1 (mayoritas), sedangkan Skenario 2 (Dengan SMOTE) lebih sensitif dalam mendeteksi opini Kelas 0 (Support Hogi / Kritik Polisi) di dataset TikTok riil.
@@ -673,17 +683,21 @@ elif page == "📊 Eksplorasi Data":
             fig_sm.add_trace(go.Bar(
                 x=["Kelas 0", "Kelas 1"], y=[bc0, bc1],
                 marker_color=["#16a34a","#dc2626"],
-                text=[str(bc0), str(bc1)], textposition="outside"),
+                text=[str(bc0), str(bc1)], textposition="outside",
+                textfont=dict(color="#1f2937")),
                 row=1, col=1)
             fig_sm.add_trace(go.Bar(
                 x=["Kelas 0", "Kelas 1"], y=[ac0, ac1],
                 marker_color=["#16a34a","#3b82f6"],
-                text=[str(ac0), str(ac1)], textposition="outside"),
+                text=[str(ac0), str(ac1)], textposition="outside",
+                textfont=dict(color="#1f2937")),
                 row=1, col=2)
             fig_sm.update_layout(height=380, showlegend=False,
                 plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
-                margin=dict(t=50,b=20))
-            st.plotly_chart(fig_sm, use_container_width=True)
+                margin=dict(t=50,b=20),
+                font=dict(color="#1f2937"))
+            fig_sm.update_annotations(font=dict(color="#1f2937"))
+            st.plotly_chart(fig_sm, use_container_width=True, theme=None)
 
             st.markdown("""<div class='info-box'>
                 💡 <b>Mekanisme SMOTE:</b> <i>x_new = x_i + δ × (x_k − x_i)</i>
@@ -717,12 +731,14 @@ elif page == "📊 Eksplorasi Data":
                         marker_color=["#16a34a","#dc2626"],
                         text=[f"{c0} ({p0}%)", f"{c1} ({p1}%)"],
                         textposition="outside",
+                        textfont=dict(color="#1f2937"),
                     )])
                     fig_bar.update_layout(title="Distribusi Kelas Prediksi (Dengan SMOTE)",
                         yaxis_title="Jumlah", height=320,
                         plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
-                        margin=dict(t=40,b=20))
-                    st.plotly_chart(fig_bar, use_container_width=True)
+                        margin=dict(t=40,b=20),
+                        font=dict(color="#1f2937"))
+                    st.plotly_chart(fig_bar, use_container_width=True, theme=None)
                 with c2:
                     fig_pie = go.Figure(data=[go.Pie(
                         labels=vc["Kelas"], values=vc["Jumlah"], hole=0.45,
@@ -730,8 +746,9 @@ elif page == "📊 Eksplorasi Data":
                         textinfo="label+percent", textfont_size=11,
                     )])
                     fig_pie.update_layout(title="Proporsi Kelas Prediksi (Dengan SMOTE)", height=320,
-                        margin=dict(t=40,b=20), paper_bgcolor="#fff")
-                    st.plotly_chart(fig_pie, use_container_width=True)
+                        margin=dict(t=40,b=20), paper_bgcolor="#fff",
+                        font=dict(color="#1f2937"))
+                    st.plotly_chart(fig_pie, use_container_width=True, theme=None)
                     
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.dataframe(vc, use_container_width=True, hide_index=True)
@@ -758,12 +775,14 @@ elif page == "📊 Eksplorasi Data":
                     text=[f"{r['Jumlah']:,} ({r['Persentase']}%)"
                           for _, r in vc.iterrows()],
                     textposition="outside",
+                    textfont=dict(color="#1f2937")
                 )])
                 fig_bar.update_layout(title="Distribusi Kelas Keseluruhan",
                     yaxis_title="Jumlah", height=320,
                     plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
-                    margin=dict(t=40,b=20))
-                st.plotly_chart(fig_bar, use_container_width=True)
+                    margin=dict(t=40,b=20),
+                    font=dict(color="#1f2937"))
+                st.plotly_chart(fig_bar, use_container_width=True, theme=None)
             with c2:
                 st.markdown("<br><br>", unsafe_allow_html=True)
                 st.dataframe(vc, use_container_width=True, hide_index=True)
@@ -773,8 +792,7 @@ elif page == "📊 Eksplorasi Data":
                     st.dataframe(src_dist, use_container_width=True, hide_index=True)
 
     with tab4:
-        st.markdown("<div class='section-heading'>Preview Data Mentah</div>",
-                    unsafe_allow_html=True)
+        st.subheader("Preview Data Mentah", divider="blue")
         cols_show  = [c for c in df_raw.columns if c != "_source"]
         n_preview  = st.slider("Jumlah baris ditampilkan", 10, 200, 50)
         st.dataframe(df_raw[cols_show].head(n_preview),
@@ -843,14 +861,15 @@ elif page == "⚖️ Perbandingan Model":
             ))
             fig.update_layout(title=title, height=320,
                 margin=dict(t=50,b=40,l=80,r=20), paper_bgcolor="#fff",
-                xaxis=dict(side="bottom"))
+                xaxis=dict(side="bottom"),
+                font=dict(color="#1f2937"))
             return fig
 
         c1, c2 = st.columns(2)
         with c1:
             st.plotly_chart(
                 plot_cm(s1["TP"],s1["TN"],s1["FP"],s1["FN"],"Skenario 1 — Tanpa SMOTE"),
-                use_container_width=True)
+                use_container_width=True, theme=None)
             st.markdown(f"<div style='text-align:center;font-size:.85rem;color:#64748b;'>"
                         f"Accuracy: <b>{s1['accuracy']:.4f}</b> | "
                         f"F1-Macro: <b>{s1['f1_macro']:.4f}</b></div>",
@@ -858,7 +877,7 @@ elif page == "⚖️ Perbandingan Model":
         with c2:
             st.plotly_chart(
                 plot_cm(s2["TP"],s2["TN"],s2["FP"],s2["FN"],"Skenario 2 — Dengan SMOTE"),
-                use_container_width=True)
+                use_container_width=True, theme=None)
             st.markdown(f"<div style='text-align:center;font-size:.85rem;color:#64748b;'>"
                         f"Accuracy: <b>{s2['accuracy']:.4f}</b> | "
                         f"F1-Macro: <b>{s2['f1_macro']:.4f}</b></div>",
@@ -878,17 +897,18 @@ elif page == "⚖️ Perbandingan Model":
         fig_b = go.Figure()
         fig_b.add_trace(go.Bar(name="Skenario 1 (Tanpa SMOTE)", x=labels, y=v1,
             marker_color="#94a3b8",
-            text=[f"{v:.4f}" for v in v1], textposition="outside", textfont=dict(size=9)))
+            text=[f"{v:.4f}" for v in v1], textposition="outside", textfont=dict(size=9, color="#1f2937")))
         fig_b.add_trace(go.Bar(name="Skenario 2 (Dengan SMOTE)", x=labels, y=v2,
             marker_color="#3b82f6",
-            text=[f"{v:.4f}" for v in v2], textposition="outside", textfont=dict(size=9)))
+            text=[f"{v:.4f}" for v in v2], textposition="outside", textfont=dict(size=9, color="#1f2937")))
         fig_b.update_layout(barmode="group",
             yaxis=dict(range=[0.5,1.05], title="Nilai Metrik"),
             xaxis_title="Metrik Evaluasi", height=430,
             plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
             legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="center",x=0.5),
-            margin=dict(t=60,b=20))
-        st.plotly_chart(fig_b, use_container_width=True)
+            margin=dict(t=60,b=20),
+            font=dict(color="#1f2937"))
+        st.plotly_chart(fig_b, use_container_width=True, theme=None)
 
         rl = ["Precision K0","Recall K0","F1 K0",
               "Precision K1","Recall K1","F1 K1","F1 Macro"]
@@ -904,8 +924,9 @@ elif page == "⚖️ Perbandingan Model":
         fig_r.update_layout(
             polar=dict(radialaxis=dict(visible=True, range=[0.5,1.0])),
             height=400, paper_bgcolor="#fff",
-            legend=dict(orientation="h",yanchor="bottom",y=1.05,xanchor="center",x=0.5))
-        st.plotly_chart(fig_r, use_container_width=True)
+            legend=dict(orientation="h",yanchor="bottom",y=1.05,xanchor="center",x=0.5),
+            font=dict(color="#1f2937"))
+        st.plotly_chart(fig_r, use_container_width=True, theme=None)
 
     with tab4:
         st.dataframe(pd.DataFrame({
@@ -955,7 +976,7 @@ elif page == "🤖 Demo Prediksi":
             st.info("ℹ️ Skenario 2 — Simulasi keyword matching")
 
     st.markdown("---")
-    st.markdown("<div class='section-heading'>Input Komentar</div>", unsafe_allow_html=True)
+    st.subheader("Input Komentar", divider="blue")
 
     comment_input = st.text_area("Komentar:", height=100, label_visibility="collapsed",
         placeholder="Contoh: pecat kapolresnya, korban malah jadi tersangka ini tidak adil!")
@@ -973,8 +994,7 @@ elif page == "🤖 Demo Prediksi":
                        if (tok and bert and mlp_s2) else predict_keyword(comment_input)
 
             st.markdown("---")
-            st.markdown("<div class='section-heading'>⚖️ Perbandingan Hasil Kedua Model</div>",
-                        unsafe_allow_html=True)
+            st.subheader("⚖️ Perbandingan Hasil Kedua Model", divider="blue")
 
             col1, col_mid, col2 = st.columns([5, 1, 5])
 
@@ -1019,8 +1039,7 @@ elif page == "🤖 Demo Prediksi":
                             unsafe_allow_html=True)
 
             # Grafik probabilitas
-            st.markdown("<div class='section-heading'>Probabilitas Prediksi — Perbandingan</div>",
-                        unsafe_allow_html=True)
+            st.subheader("Probabilitas Prediksi — Perbandingan", divider="blue")
             fig_c = go.Figure()
             fig_c.add_trace(go.Bar(
                 name="Skenario 1 (Tanpa SMOTE)",
@@ -1029,6 +1048,7 @@ elif page == "🤖 Demo Prediksi":
                 marker_color=["#16a34a","#dc2626"], opacity=0.6,
                 text=[f"{res1['prob_0']:.4f}",f"{res1['prob_1']:.4f}"],
                 textposition="outside",
+                textfont=dict(color="#1f2937")
             ))
             fig_c.add_trace(go.Bar(
                 name="Skenario 2 (Dengan SMOTE)",
@@ -1037,14 +1057,16 @@ elif page == "🤖 Demo Prediksi":
                 marker_color=["#059669","#b91c1c"],
                 text=[f"{res2['prob_0']:.4f}",f"{res2['prob_1']:.4f}"],
                 textposition="outside",
+                textfont=dict(color="#1f2937")
             ))
             fig_c.update_layout(barmode="group",
                 yaxis=dict(range=[0,1.15], title="Probabilitas"),
                 xaxis_title="Kelas", height=350,
                 plot_bgcolor="#f8fafc", paper_bgcolor="#fff",
                 legend=dict(orientation="h",yanchor="bottom",y=1.02,xanchor="center",x=0.5),
-                margin=dict(t=60,b=20))
-            st.plotly_chart(fig_c, use_container_width=True)
+                margin=dict(t=60,b=20),
+                font=dict(color="#1f2937"))
+            st.plotly_chart(fig_c, use_container_width=True, theme=None)
 
             # Kesepakatan model
             if res1["class"] == res2["class"]:
@@ -1090,8 +1112,7 @@ elif page == "🤖 Demo Prediksi":
 
     # ── Batch Prediksi ──
     st.markdown("---")
-    st.markdown("<div class='section-heading'>Prediksi Batch (Upload CSV)</div>",
-                unsafe_allow_html=True)
+    st.subheader("Prediksi Batch (Upload CSV)", divider="blue")
     st.markdown("Upload CSV dengan kolom `comment`. Kedua model akan memproses setiap baris.")
 
     uploaded = st.file_uploader("Upload CSV", type=["csv"], label_visibility="collapsed")
@@ -1127,8 +1148,7 @@ elif page == "🤖 Demo Prediksi":
             st.dataframe(df_res, use_container_width=True, height=350)
 
             # Ringkasan
-            st.markdown("<div class='section-heading'>Ringkasan Prediksi Batch</div>",
-                        unsafe_allow_html=True)
+            st.subheader("Ringkasan Prediksi Batch", divider="blue")
             s1k0 = (df_res["S1_class"]==0).sum()
             s2k0 = (df_res["S2_class"]==0).sum()
             rc1,rc2,rc3,rc4 = st.columns(4)
