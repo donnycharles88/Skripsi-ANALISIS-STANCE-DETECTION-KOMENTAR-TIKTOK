@@ -135,4 +135,4 @@ Aplikasi telah berhasil di-deploy dan dapat diakses publik melalui tautan beriku
 
 ---
 
-© 2024 Tim Kelompok Doni & Adinda. All Rights Reserved.
+© 2026 Tim Kelompok Doni & Adinda. All Rights Reserved.
